@@ -1,0 +1,36 @@
+{
+  "name": "esri-style-ft-mapbox-style",
+  "license": "MIT",
+  "version": "0.0.1",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "author": "Youssef-Harby <me@youssefharby.com>",
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs,esm --dts",
+    "release": "pnpm run build && changeset publish",
+    "lint": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/Youssef-Harby/esri-style-ft-mapbox-style.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Youssef-Harby/esri-style-ft-mapbox-style/issues"
+  },
+  "homepage": "https://github.com/Youssef-Harby/esri-style-ft-mapbox-style#readme",
+  "keywords": [
+    "mapbox",
+    "esri",
+    "styles",
+    "vector tiles",
+    "pbf",
+    "protobuf",
+    "stylegl"
+  ],
+  "devDependencies": {
+    "@changesets/cli": "^2.27.1",
+    "tsup": "^8.0.2",
+    "typescript": "^5.4.4"
+  }
+}
