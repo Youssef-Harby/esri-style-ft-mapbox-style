@@ -1,26 +1,52 @@
 <script lang="ts">
   import { onMount } from "svelte";
+  import { mapState } from "../lib/store";
+  import type { MapState } from "../lib/store";
   import Map from "@arcgis/core/Map";
   import MapView from "@arcgis/core/views/MapView";
-  // import esriConfig from "@arcgis/core/config";
+  import { get } from "svelte/store";
 
-  // const apiKey: string = "YOUR_API_KEY";
+  let initialMapState: MapState = get(mapState);
 
   onMount(() => {
-    // esriConfig.apiKey = apiKey;
-
     const map = new Map({
-      basemap: "streets", // Basemap style
+      basemap: "streets",
     });
 
     const view = new MapView({
-      container: "viewDiv", // Ensure this ID matches the div ID below
+      container: "viewDiv",
       map: map,
-      center: [-118.805, 34.027], // Longitude, latitude
-      zoom: 13, // Zoom level
+      center: initialMapState.center,
+      zoom: initialMapState.zoom,
     });
+
+    view.when(() => {
+      // Update shared state on map movement
+      view.watch(["center", "zoom"], () => {
+        mapState.set({
+          center: [view.center.longitude, view.center.latitude],
+          zoom: view.zoom,
+        });
+      });
+    });
+
+    const unsubscribe = mapState.subscribe(($mapState) => {
+      if (
+        view.center.longitude !== $mapState.center[0] ||
+        view.center.latitude !== $mapState.center[1] ||
+        view.zoom !== $mapState.zoom
+      ) {
+        view.goTo({
+          center: $mapState.center,
+          zoom: $mapState.zoom,
+        });
+      }
+    });
+
+    return () => {
+      unsubscribe();
+    };
   });
 </script>
 
 <div id="viewDiv" class="h-full"></div>
-<!-- Height management via Tailwind -->
