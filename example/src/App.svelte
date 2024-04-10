@@ -1,64 +1,55 @@
-<script lang="ts">
-  import EsriToMapbox from "./lib/EsriToMapbox.svelte";
+<script>
+  import EsriMap from "./lib/EsriMap.svelte";
+  import MaplibreMap from "./lib/MaplibreMap.svelte";
+  import CodeEditor from "./lib/Monaco/CodeEditor.svelte";
 </script>
 
-<main>
-  <div>
-    <a
-      href="https://developers.arcgis.com/rest/services-reference/enterprise/vector-tile-style.htm"
-      target="_blank"
-      rel="noreferrer"
-    >
-      <img
-        src="https://upload.wikimedia.org/wikipedia/de/4/46/ESRI_Logo.svg"
-        class="logo"
-        alt="Esri Logo"
+<div class="flex flex-col md:flex-row h-screen">
+  <!-- CODE EDITOR 1 -->
+  <div class="flex-1 flex flex-col">
+    <div class="flex-1 p-4 overflow-auto bg-gray-50">
+      <CodeEditor content={`{"key":"value"}`} language="json"></CodeEditor>
+    </div>
+    <div class="flex items-center p-4 bg-gray-200">
+      <input
+        type="text"
+        placeholder="Enter URL"
+        class="input input-bordered w-full mr-2"
       />
-    </a>
-    <a
-      href="https://docs.mapbox.com/style-spec/guides/"
-      target="_blank"
-      rel="noreferrer"
-    >
-      <img
-        src="https://upload.wikimedia.org/wikipedia/commons/1/1f/Mapbox_logo_2019.svg"
-        class="logo svelte"
-        alt="Mapbox Logo"
-      />
-    </a>
-  </div>
-  <h1>Vector Tiles Style Converter</h1>
-
-  <div class="card">
-    <EsriToMapbox />
+      <button class="btn btn-outline">Fetch</button>
+    </div>
+    <div class="flex-1">
+      <!-- Show map in both mobile and desktop view -->
+      <EsriMap></EsriMap>
+    </div>
   </div>
 
-  <p>
-    Check out <a
-      href="https://www.npmjs.com/package/esri-style-ft-mapbox-style"
-      target="_blank"
-      rel="noreferrer">npm package</a
-    >, now you can convert Esri styles to Mapbox styles and vice verce in a
-    single line of code.
-  </p>
+  <!-- Divider with buttons -->
+  <div
+    class="flex flex-col justify-center items-center p-2 bg-gray-500 shadow z-10 md:w-16 md:flex"
+  >
+    <button class="btn btn-outline-white btn-md my-2">⇦</button>
+    <button class="btn btn-outline-white btn-md my-2">⇨</button>
+    <button class="btn btn-circle btn-sm my-2">⟳</button>
+    <button class="btn btn-circle btn-sm my-2">≡</button>
+  </div>
 
-  <p class="read-the-docs">Click on the Esri and Mapbox logos to learn more</p>
-</main>
-
-<style>
-  .logo {
-    height: 6em;
-    padding: 1.5em;
-    will-change: filter;
-    transition: filter 300ms;
-  }
-  .logo:hover {
-    filter: drop-shadow(0 0 2em #646cffaa);
-  }
-  .logo.svelte:hover {
-    filter: drop-shadow(0 0 2em #ff3e00aa);
-  }
-  .read-the-docs {
-    color: #888;
-  }
-</style>
+  <!-- CODE EDITOR 2 -->
+  <div class="flex-1 flex flex-col">
+    <div class="flex-1 p-4 overflow-auto bg-gray-50">
+      <CodeEditor content={`{"key":"value"}`} language="json"></CodeEditor>
+    </div>
+    <div class="flex items-center p-4 bg-gray-200">
+      <input
+        type="text"
+        placeholder="Enter URL"
+        class="input input-bordered w-full mr-2"
+      />
+      <button class="btn btn-outline">Fetch</button>
+    </div>
+    <div class="flex-1">
+      <!-- Show map in both mobile and desktop view -->
+      <MaplibreMap></MaplibreMap>
+    </div>
+  </div>
+</div>

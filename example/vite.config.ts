@@ -10,5 +10,8 @@ export default defineConfig({
     alias: {
       '@esri-style-ft-mapbox-style': resolve(__dirname, '..', 'src')
     }
+  },
+  optimizeDeps: {
+    exclude: []
   }
 })
