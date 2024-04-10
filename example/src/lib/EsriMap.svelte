@@ -4,13 +4,20 @@
   import type { MapState } from "../lib/store";
   import Map from "@arcgis/core/Map";
   import MapView from "@arcgis/core/views/MapView";
+  import VectorTileLayer from "@arcgis/core/layers/VectorTileLayer";
   import { get } from "svelte/store";
 
   let initialMapState: MapState = get(mapState);
 
   onMount(() => {
+    const customBasemap = new VectorTileLayer({
+      url: "https://basemaps.arcgis.com/arcgis/rest/services/World_Basemap_v2/VectorTileServer",
+    });
+
     const map = new Map({
-      basemap: "streets",
+      basemap: {
+        baseLayers: [customBasemap],
+      },
     });
 
     const view = new MapView({
