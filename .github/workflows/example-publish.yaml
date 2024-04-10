@@ -11,14 +11,16 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4.1.1
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4.0.2
+      - uses: pnpm/action-setup@v3.0.0
         with:
-          node-version: "20"
+          version: 8.15.6
+      - uses: actions/setup-node@v4.0.2
+        with:
+          node-version: 20.x
+          cache: "pnpm"
 
       - name: Install Dependencies
-        run: npm install
+        run: pnpm install --frozen-lockfile
 
       - name: Build Example
         run: cd example && npm install && npm run build
