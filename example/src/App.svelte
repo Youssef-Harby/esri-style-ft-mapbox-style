@@ -28,6 +28,19 @@
       mapboxStyleJson.set(`Error: ${(error as Error).message}`);
     }
   }
+  function handleMapboxStyleChange(event: CustomEvent<string>) {
+    mapboxStyleJson.set(event.detail);
+  }
+
+  // Watch for changes in mapboxStyleJson and update maplibreStyle
+  $: {
+    try {
+      const parsedStyle = JSON.parse($mapboxStyleJson);
+      maplibreStyle.set(parsedStyle);
+    } catch (error) {
+      console.error("Failed to parse Mapbox style JSON:", error);
+    }
+  }
 </script>
 
 <div class="flex flex-col md:flex-row h-screen">
@@ -63,7 +76,11 @@
   <!-- CODE EDITOR 2 -->
   <div class="flex-1 flex flex-col">
     <div class="flex-1 p-4 overflow-auto bg-gray-50">
-      <CodeEditor bind:content={$mapboxStyleJson} language="json"></CodeEditor>
+      <CodeEditor
+        bind:content={$mapboxStyleJson}
+        on:change={handleMapboxStyleChange}
+        language="json"
+      ></CodeEditor>
     </div>
     <div class="flex items-center p-4 bg-gray-200">
       <input
