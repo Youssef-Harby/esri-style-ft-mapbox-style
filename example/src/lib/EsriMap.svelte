@@ -9,15 +9,13 @@
   import { when } from "@arcgis/core/core/reactiveUtils";
 
   let initialMapState: MapState = get(mapState);
-  // let initialBasemapUrl: string = get(esriBasemapUrl);
-  let styleFromEditor: any = JSON.parse(get(esriStyleJson));
   let map: Map;
   let view: MapView;
 
   onMount(() => {
     const customBasemap = new VectorTileLayer({
       // url: initialBasemapUrl,
-      style: styleFromEditor,
+      style: $esriStyleJson,
     });
 
     const map = new Map({

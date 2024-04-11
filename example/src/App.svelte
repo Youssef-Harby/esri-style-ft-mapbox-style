@@ -10,21 +10,39 @@
   import MaplibreMap from "./lib/MaplibreMap.svelte";
   import CodeEditor from "./lib/Monaco/CodeEditor.svelte";
   import {
-    constructMapboxStyleFromEsri,
-    fetchEsriStyleJson,
     resolveEsriRelativePaths,
     constructMapboxStyleFromEsriAbsolute,
   } from "@esri-style-ft-mapbox-style/esriToMapbox";
-  import { writable, get } from "svelte/store";
+  import { get } from "svelte/store";
 
-  let urlInput: string = "";
+  let esriUrlInput: string = "";
+  let maplibreUrlInput: string = "";
 
   async function esriLogicSection(): Promise<void> {
-    if (!urlInput) return;
+    if (!esriUrlInput) return;
     try {
-      const theFetchedEsriStyleJson = await resolveEsriRelativePaths(urlInput);
+      const theFetchedEsriStyleJson =
+        await resolveEsriRelativePaths(esriUrlInput);
       esriStyleJson.set(JSON.stringify(theFetchedEsriStyleJson, null, 2));
-      esriBasemapUrl.set(urlInput);
+      esriBasemapUrl.set(esriUrlInput);
+    } catch (error) {
+      console.error("Failed to convert style:", error);
+      // mapboxStyleJson.set(`Error: ${(error as Error).message}`);
+    }
+  }
+
+  async function maplibreLogicSection(): Promise<void> {
+    if (!maplibreUrlInput) return;
+    try {
+      const response = await fetch(maplibreUrlInput);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const theFetchedMapLibreStyleJson = await response.json();
+      maplibreStyleJson.set(
+        JSON.stringify(theFetchedMapLibreStyleJson, null, 2)
+      );
+      maplibreBasemapUrl.set(maplibreUrlInput);
     } catch (error) {
       console.error("Failed to convert style:", error);
       // mapboxStyleJson.set(`Error: ${(error as Error).message}`);
@@ -37,24 +55,18 @@
     maplibreStyleJson.set(event.detail);
   }
 
-  async function convertEsritoMaplibreStyle(): Promise<void> {
+  async function convertEsriToMaplibreStyle(): Promise<void> {
     const theFetchedMaplibreStyleJson =
       await constructMapboxStyleFromEsriAbsolute(
-        urlInput,
+        esriUrlInput,
         JSON.parse(get(esriStyleJson))
       );
 
     maplibreStyleJson.set(JSON.stringify(theFetchedMaplibreStyleJson, null, 2));
   }
 
-  // Watch for changes in mapboxStyleJson and update maplibreStyle
-  $: {
-    try {
-      // const parsedStyle = JSON.parse($mapboxStyleJson);
-      // maplibreStyle.set(parsedStyle);
-    } catch (error) {
-      console.error("Failed to parse Mapbox style JSON:", error);
-    }
+  function convertMaplibreToEsriStyle(): void {
+    esriStyleJson.set(get(maplibreStyleJson));
   }
 </script>
 
@@ -70,7 +82,7 @@
     </div>
     <div class="flex items-center p-4 bg-gray-200">
       <input
-        bind:value={urlInput}
+        bind:value={esriUrlInput}
         type="text"
         placeholder="Enter URL"
         class="input input-bordered w-full mr-2"
@@ -88,9 +100,12 @@
   >
     <button
       class="btn btn-outline-white btn-md my-2"
-      on:click={convertEsritoMaplibreStyle}>⇨</button
+      on:click={convertEsriToMaplibreStyle}>⇨</button
     >
-    <button class="btn btn-outline-white btn-md my-2">⇦</button>
+    <button
+      class="btn btn-outline-white btn-md my-2"
+      on:click={convertMaplibreToEsriStyle}>⇦</button
+    >
     <button class="btn btn-circle btn-sm my-2">⟳</button>
     <button class="btn btn-circle btn-sm my-2">≡</button>
   </div>
@@ -107,10 +122,13 @@
     <div class="flex items-center p-4 bg-gray-200">
       <input
         type="text"
+        bind:value={maplibreUrlInput}
         placeholder="Enter URL"
         class="input input-bordered w-full mr-2"
       />
-      <button class="btn btn-outline">Fetch</button>
+      <button class="btn btn-outline" on:click={maplibreLogicSection}
+        >Fetch</button
+      >
     </div>
     <div class="flex-1">
       <!-- Show map in both mobile and desktop view -->

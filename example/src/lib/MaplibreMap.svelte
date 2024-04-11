@@ -8,7 +8,7 @@
     ScaleControl,
     AttributionControl,
   } from "svelte-maplibre";
-  import { mapState, maplibreBasemapUrl } from "../lib/store";
+  import { mapState, maplibreStyleJson } from "../lib/store";
   import { get } from "svelte/store";
 
   let mapClasses = "h-full w-full";
@@ -42,17 +42,12 @@
       unsubscribe();
     };
   });
-  $: {
-    if (map) {
-      map.setStyle($maplibreBasemapUrl);
-    }
-  }
 </script>
 
 <MapLibre
   bind:map
   class={mapClasses}
-  style={$maplibreBasemapUrl}
+  style={JSON.parse($maplibreStyleJson)}
   center={initialMapState.center}
   zoom={initialMapState.zoom}
   attributionControl={false}
