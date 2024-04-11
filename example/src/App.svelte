@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { mapState, basemapUrl, maplibreStyleUrl } from "./lib/store";
+  import { mapState, basemapUrl, maplibreStyle } from "./lib/store";
   import EsriMap from "./lib/EsriMap.svelte";
   import MaplibreMap from "./lib/MaplibreMap.svelte";
   import CodeEditor from "./lib/Monaco/CodeEditor.svelte";
@@ -19,6 +19,7 @@
       const theMapboxStyle = await constructMapboxStyleFromEsri(urlInput);
       mapboxStyleJson.set(JSON.stringify(theMapboxStyle, null, 2));
       basemapUrl.set(urlInput); // Update the basemap URL in the store
+      maplibreStyle.set(theMapboxStyle);
 
       const theEsriStyle = await fetchEsriStyleJson(urlInput);
       esriStyleJson.set(JSON.stringify(theEsriStyle, null, 2));

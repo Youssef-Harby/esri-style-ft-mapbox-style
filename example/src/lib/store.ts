@@ -15,4 +15,4 @@ export const mapState = writable<MapState>({
 export const basemapUrl = writable<string>("https://basemaps.arcgis.com/arcgis/rest/services/World_Basemap_v2/VectorTileServer");
 
 // Optional: Separate store for Maplibre style URL if needed
-export const maplibreStyleUrl = writable<string>("https://basemaps.cartocdn.com/gl/positron-gl-style/style.json");
+export const maplibreStyle = writable<string>("https://basemaps.cartocdn.com/gl/positron-gl-style/style.json");

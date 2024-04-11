@@ -9,13 +9,13 @@
     AttributionControl,
   } from "svelte-maplibre";
   import maplibregl from "maplibre-gl";
-  import { mapState, maplibreStyleUrl } from "../lib/store";
+  import { mapState, maplibreStyle } from "../lib/store";
   import { get } from "svelte/store";
 
   let mapClasses = "h-full w-full";
   let map: any; // This will hold the map instance
   let initialMapState = get(mapState);
-  let styleUrl = get(maplibreStyleUrl);
+  let theStyle = get(maplibreStyle);
 
   onMount(() => {
     maplibregl.setRTLTextPlugin(
@@ -49,12 +49,17 @@
       unsubscribe();
     };
   });
+  $: {
+    if (map) {
+      map.setStyle($maplibreStyle);
+    }
+  }
 </script>
 
 <MapLibre
   bind:map
   class={mapClasses}
-  style={styleUrl}
+  style={theStyle}
   center={initialMapState.center}
   zoom={initialMapState.zoom}
   attributionControl={false}
