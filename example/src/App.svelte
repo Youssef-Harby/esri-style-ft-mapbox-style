@@ -13,6 +13,7 @@
     constructMapboxStyleFromEsri,
     fetchEsriStyleJson,
     resolveEsriRelativePaths,
+    constructMapboxStyleFromEsriAbsolute,
   } from "@esri-style-ft-mapbox-style/esriToMapbox";
   import { writable, get } from "svelte/store";
 
@@ -29,8 +30,21 @@
       // mapboxStyleJson.set(`Error: ${(error as Error).message}`);
     }
   }
-  function handleEditorChange(event: CustomEvent<string>) {
+  function handleEsriEditorChange(event: CustomEvent<string>) {
     esriStyleJson.set(event.detail);
+  }
+  function handleMaplibreEditorChange(event: CustomEvent<string>) {
+    maplibreStyleJson.set(event.detail);
+  }
+
+  async function convertEsritoMaplibreStyle(): Promise<void> {
+    const theFetchedMaplibreStyleJson =
+      await constructMapboxStyleFromEsriAbsolute(
+        urlInput,
+        JSON.parse(get(esriStyleJson))
+      );
+
+    maplibreStyleJson.set(JSON.stringify(theFetchedMaplibreStyleJson, null, 2));
   }
 
   // Watch for changes in mapboxStyleJson and update maplibreStyle
@@ -50,7 +64,7 @@
     <div class="flex-1 p-4 overflow-auto bg-gray-50">
       <CodeEditor
         bind:content={$esriStyleJson}
-        on:change={handleEditorChange}
+        on:change={handleEsriEditorChange}
         language="json"
       />
     </div>
@@ -72,8 +86,11 @@
   <div
     class="flex flex-col justify-center items-center p-2 bg-gray-500 shadow z-10 md:w-16 md:flex"
   >
+    <button
+      class="btn btn-outline-white btn-md my-2"
+      on:click={convertEsritoMaplibreStyle}>⇨</button
+    >
     <button class="btn btn-outline-white btn-md my-2">⇦</button>
-    <button class="btn btn-outline-white btn-md my-2">⇨</button>
     <button class="btn btn-circle btn-sm my-2">⟳</button>
     <button class="btn btn-circle btn-sm my-2">≡</button>
   </div>
@@ -81,11 +98,11 @@
   <!-- CODE EDITOR 2 -->
   <div class="flex-1 flex flex-col">
     <div class="flex-1 p-4 overflow-auto bg-gray-50">
-      <!-- <CodeEditor
-        bind:content={$mapboxStyleJson}
-        on:change={handleMapboxStyleChange}
+      <CodeEditor
+        bind:content={$maplibreStyleJson}
         language="json"
-      ></CodeEditor> -->
+        on:change={handleMaplibreEditorChange}
+      ></CodeEditor>
     </div>
     <div class="flex items-center p-4 bg-gray-200">
       <input

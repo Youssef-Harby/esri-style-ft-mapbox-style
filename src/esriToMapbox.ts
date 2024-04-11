@@ -83,7 +83,39 @@ async function resolveEsriRelativePaths(baseUrl: string, esriStyleJson?: any): P
     return resolvedStyle;
 }
 
+async function constructMapboxStyleFromEsriAbsolute(baseUrl: string, esriStyleJson?: any): Promise<any> {
+    // Normalize the base URL to ensure it does not end with a slash
+    const normalizedBaseUrl = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
+
+    // Fetch the Esri style JSON if it's not provided
+    if (!esriStyleJson) {
+        esriStyleJson = await fetchEsriStyleJson(normalizedBaseUrl);
+    }
+
+    // Adjust the 'sources' to use the correct tile URL pattern while preserving other properties
+    if (esriStyleJson.sources) {
+        for (const sourceKey in esriStyleJson.sources) {
+            const source = esriStyleJson.sources[sourceKey];
+            if (source.type === 'vector' && source.url) {
+                // Preserve all source properties
+                const updatedSource = { ...source };
+                // Update tiles URL, remove 'url' property
+                updatedSource.tiles = [`${source.url}tile/{z}/{y}/{x}.pbf`];
+                delete updatedSource.url;
+
+
+                // Update the source with the new properties
+                esriStyleJson.sources[sourceKey] = updatedSource;
+            }
+        }
+    }
+
+
+    return esriStyleJson;
+}
 
 
 
-export { constructMapboxStyleFromEsri, fetchEsriStyleJson, resolveEsriRelativePaths };
+
+
+export { constructMapboxStyleFromEsri, fetchEsriStyleJson, resolveEsriRelativePaths, constructMapboxStyleFromEsriAbsolute };
