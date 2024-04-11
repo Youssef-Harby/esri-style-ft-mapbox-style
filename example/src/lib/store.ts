@@ -7,8 +7,8 @@ export interface MapState {
 
 // General map state for center and zoom
 export const mapState = writable<MapState>({
-    center: [-118.805, 34.027],
-    zoom: 13,
+    center: [40.2, 24.5],
+    zoom: 4,
 });
 
 // Separate store for Esri basemap URL
