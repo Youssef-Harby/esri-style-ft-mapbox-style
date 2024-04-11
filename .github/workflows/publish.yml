@@ -26,7 +26,7 @@ jobs:
           cache: "pnpm"
 
       - run: pnpm install --frozen-lockfile
-      - run: cp -f README.md dist/
+      # - run: cp -f README.md dist/
       - name: Create Release Pull Request or Publish
         id: changesets
         uses: changesets/action@v1.4.7
