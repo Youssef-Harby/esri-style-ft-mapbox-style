@@ -69,6 +69,6 @@
   <FullscreenControl position="top-left" />
   <ScaleControl />
   <AttributionControl
-    customAttribution={`A <strong class="text-red-500">custom</strong> attribution`}
+    customAttribution={`<strong class="text-gray-500">MapLibre</strong>`}
   />
 </MapLibre>

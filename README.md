@@ -2,6 +2,8 @@
 
 This project provides a utility for converting Esri Vector Tile Styles to Mapbox Style specifications, facilitating the integration and usage of Esri-hosted vector tiles within Mapbox applications. The conversion process preserves source properties like attribution, bounds, minzoom, maxzoom, scheme, etc., ensuring a seamless transition between Esri and Mapbox style formats.
 
+![screenshot](docs/images/esri-style-ft-mapbox-style-screenshot.jpg)
+
 ## Current Status
 
 - ✅ The conversion from Esri to Mapbox style specifications is fully supported and operational.
