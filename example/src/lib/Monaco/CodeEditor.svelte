@@ -1,29 +1,49 @@
 <!-- CodeEditor.svelte -->
 <script lang="ts">
+  import loader from "@monaco-editor/loader";
   import { onDestroy, onMount } from "svelte";
   import type * as Monaco from "monaco-editor/esm/vs/editor/editor.api";
 
-  export let content: string; // Add this line to accept content as a prop
-  export let language: string = "json"; // You can also pass the language as a prop
+  export let content: string = ""; // Default content as empty string
+  export let language: string = "javascript"; // Default language
 
   let editor: Monaco.editor.IStandaloneCodeEditor;
   let monaco: typeof Monaco;
   let editorContainer: HTMLElement;
 
   onMount(async () => {
-    monaco = (await import("./monaco")).default;
+    // Initialize the loader with the configuration if needed
+    loader.config({
+      paths: {
+        vs: "https://unpkg.com/monaco-editor/min/vs", // Adjust as needed
+      },
+    });
+
+    monaco = await loader.init();
 
     editor = monaco.editor.create(editorContainer, {
       value: content,
       language: language,
-      // Add other options here as needed
+      theme: "vs-light", // Optional: specify the editor's theme
     });
   });
+  // Reactive content update
+  $: if (editor) {
+    editor.setValue(content);
+  }
 
   onDestroy(() => {
-    editor?.getModel()?.dispose();
-    editor?.dispose();
+    editor.getModel()?.dispose(); // Dispose the model explicitly
+    editor.dispose(); // Dispose the editor instance
   });
 </script>
 
-<div class="w-full h-full" bind:this={editorContainer} />
+<div bind:this={editorContainer} class="editor-container"></div>
+
+<style>
+  .editor-container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+  }
+</style>

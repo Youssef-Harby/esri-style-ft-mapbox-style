@@ -1,25 +1,50 @@
-<script>
+<script lang="ts">
+  import { mapState, basemapUrl, maplibreStyleUrl } from "./lib/store";
   import EsriMap from "./lib/EsriMap.svelte";
   import MaplibreMap from "./lib/MaplibreMap.svelte";
   import CodeEditor from "./lib/Monaco/CodeEditor.svelte";
+  import {
+    constructMapboxStyleFromEsri,
+    fetchEsriStyleJson,
+  } from "@esri-style-ft-mapbox-style/esriToMapbox";
+  import { writable } from "svelte/store";
+
+  let urlInput: string = "";
+  let mapboxStyleJson = writable<string>("");
+  let esriStyleJson = writable<string>("");
+
+  async function fetchMapboxStyle(): Promise<void> {
+    if (!urlInput) return;
+    try {
+      const theMapboxStyle = await constructMapboxStyleFromEsri(urlInput);
+      mapboxStyleJson.set(JSON.stringify(theMapboxStyle, null, 2));
+      basemapUrl.set(urlInput); // Update the basemap URL in the store
+
+      const theEsriStyle = await fetchEsriStyleJson(urlInput);
+      esriStyleJson.set(JSON.stringify(theEsriStyle, null, 2));
+    } catch (error) {
+      console.error("Failed to convert style:", error);
+      mapboxStyleJson.set(`Error: ${(error as Error).message}`);
+    }
+  }
 </script>
 
 <div class="flex flex-col md:flex-row h-screen">
   <!-- CODE EDITOR 1 -->
   <div class="flex-1 flex flex-col">
     <div class="flex-1 p-4 overflow-auto bg-gray-50">
-      <CodeEditor content={`{"key":"value"}`} language="json"></CodeEditor>
+      <CodeEditor bind:content={$esriStyleJson} language="json" />
     </div>
     <div class="flex items-center p-4 bg-gray-200">
       <input
+        bind:value={urlInput}
         type="text"
         placeholder="Enter URL"
         class="input input-bordered w-full mr-2"
       />
-      <button class="btn btn-outline">Fetch</button>
+      <button class="btn btn-outline" on:click={fetchMapboxStyle}>Fetch</button>
     </div>
     <div class="flex-1">
-      <!-- Show map in both mobile and desktop view -->
       <EsriMap></EsriMap>
     </div>
   </div>
@@ -37,7 +62,7 @@
   <!-- CODE EDITOR 2 -->
   <div class="flex-1 flex flex-col">
     <div class="flex-1 p-4 overflow-auto bg-gray-50">
-      <CodeEditor content={`{"key":"value"}`} language="json"></CodeEditor>
+      <CodeEditor bind:content={$mapboxStyleJson} language="json"></CodeEditor>
     </div>
     <div class="flex items-center p-4 bg-gray-200">
       <input
