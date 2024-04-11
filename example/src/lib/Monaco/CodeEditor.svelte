@@ -25,7 +25,7 @@
 
     editor = monaco.editor.create(editorContainer, {
       value: content,
-      language: language,
+      language: language || "json",
       theme: "vs-light", // Optional: specify the editor's theme
     });
   });

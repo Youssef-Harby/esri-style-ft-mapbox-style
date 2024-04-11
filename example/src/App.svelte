@@ -1,42 +1,43 @@
 <script lang="ts">
-  import { mapState, basemapUrl, maplibreStyle } from "./lib/store";
+  import {
+    mapState,
+    esriBasemapUrl,
+    maplibreBasemapUrl,
+    esriStyleJson,
+    maplibreStyleJson,
+  } from "./lib/store";
   import EsriMap from "./lib/EsriMap.svelte";
   import MaplibreMap from "./lib/MaplibreMap.svelte";
   import CodeEditor from "./lib/Monaco/CodeEditor.svelte";
   import {
     constructMapboxStyleFromEsri,
     fetchEsriStyleJson,
+    resolveEsriRelativePaths,
   } from "@esri-style-ft-mapbox-style/esriToMapbox";
-  import { writable } from "svelte/store";
+  import { writable, get } from "svelte/store";
 
   let urlInput: string = "";
-  let mapboxStyleJson = writable<string>("");
-  let esriStyleJson = writable<string>("");
 
-  async function fetchMapboxStyle(): Promise<void> {
+  async function esriLogicSection(): Promise<void> {
     if (!urlInput) return;
     try {
-      const theMapboxStyle = await constructMapboxStyleFromEsri(urlInput);
-      mapboxStyleJson.set(JSON.stringify(theMapboxStyle, null, 2));
-      basemapUrl.set(urlInput); // Update the basemap URL in the store
-      maplibreStyle.set(theMapboxStyle);
-
-      const theEsriStyle = await fetchEsriStyleJson(urlInput);
-      esriStyleJson.set(JSON.stringify(theEsriStyle, null, 2));
+      const theFetchedEsriStyleJson = await resolveEsriRelativePaths(urlInput);
+      esriStyleJson.set(JSON.stringify(theFetchedEsriStyleJson, null, 2));
+      esriBasemapUrl.set(urlInput);
     } catch (error) {
       console.error("Failed to convert style:", error);
-      mapboxStyleJson.set(`Error: ${(error as Error).message}`);
+      // mapboxStyleJson.set(`Error: ${(error as Error).message}`);
     }
   }
-  function handleMapboxStyleChange(event: CustomEvent<string>) {
-    mapboxStyleJson.set(event.detail);
+  function handleEditorChange(event: CustomEvent<string>) {
+    esriStyleJson.set(event.detail);
   }
 
   // Watch for changes in mapboxStyleJson and update maplibreStyle
   $: {
     try {
-      const parsedStyle = JSON.parse($mapboxStyleJson);
-      maplibreStyle.set(parsedStyle);
+      // const parsedStyle = JSON.parse($mapboxStyleJson);
+      // maplibreStyle.set(parsedStyle);
     } catch (error) {
       console.error("Failed to parse Mapbox style JSON:", error);
     }
@@ -47,7 +48,11 @@
   <!-- CODE EDITOR 1 -->
   <div class="flex-1 flex flex-col">
     <div class="flex-1 p-4 overflow-auto bg-gray-50">
-      <CodeEditor bind:content={$esriStyleJson} language="json" />
+      <CodeEditor
+        bind:content={$esriStyleJson}
+        on:change={handleEditorChange}
+        language="json"
+      />
     </div>
     <div class="flex items-center p-4 bg-gray-200">
       <input
@@ -56,7 +61,7 @@
         placeholder="Enter URL"
         class="input input-bordered w-full mr-2"
       />
-      <button class="btn btn-outline" on:click={fetchMapboxStyle}>Fetch</button>
+      <button class="btn btn-outline" on:click={esriLogicSection}>Fetch</button>
     </div>
     <div class="flex-1">
       <EsriMap></EsriMap>
@@ -76,11 +81,11 @@
   <!-- CODE EDITOR 2 -->
   <div class="flex-1 flex flex-col">
     <div class="flex-1 p-4 overflow-auto bg-gray-50">
-      <CodeEditor
+      <!-- <CodeEditor
         bind:content={$mapboxStyleJson}
         on:change={handleMapboxStyleChange}
         language="json"
-      ></CodeEditor>
+      ></CodeEditor> -->
     </div>
     <div class="flex items-center p-4 bg-gray-200">
       <input

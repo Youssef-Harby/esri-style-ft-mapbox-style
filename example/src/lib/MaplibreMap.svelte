@@ -8,21 +8,14 @@
     ScaleControl,
     AttributionControl,
   } from "svelte-maplibre";
-  import maplibregl from "maplibre-gl";
-  import { mapState, maplibreStyle } from "../lib/store";
+  import { mapState, maplibreBasemapUrl } from "../lib/store";
   import { get } from "svelte/store";
 
   let mapClasses = "h-full w-full";
   let map: any; // This will hold the map instance
   let initialMapState = get(mapState);
-  let theStyle = get(maplibreStyle);
 
   onMount(() => {
-    maplibregl.setRTLTextPlugin(
-      "https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-rtl-text/v0.2.3/mapbox-gl-rtl-text.js",
-      true
-    );
-
     map.on("moveend", () => {
       mapState.set({
         center: [map.getCenter().lng, map.getCenter().lat],
@@ -51,7 +44,7 @@
   });
   $: {
     if (map) {
-      map.setStyle($maplibreStyle);
+      map.setStyle($maplibreBasemapUrl);
     }
   }
 </script>
@@ -59,7 +52,7 @@
 <MapLibre
   bind:map
   class={mapClasses}
-  style={theStyle}
+  style={$maplibreBasemapUrl}
   center={initialMapState.center}
   zoom={initialMapState.zoom}
   attributionControl={false}

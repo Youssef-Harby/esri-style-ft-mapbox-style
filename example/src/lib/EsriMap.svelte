@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import { mapState, basemapUrl } from "../lib/store";
+  import { mapState, esriStyleJson } from "../lib/store";
   import type { MapState } from "../lib/store";
   import Map from "@arcgis/core/Map";
   import MapView from "@arcgis/core/views/MapView";
@@ -9,13 +9,15 @@
   import { when } from "@arcgis/core/core/reactiveUtils";
 
   let initialMapState: MapState = get(mapState);
-  let initialBasemapUrl: string = get(basemapUrl);
+  // let initialBasemapUrl: string = get(esriBasemapUrl);
+  let styleFromEditor: any = JSON.parse(get(esriStyleJson));
   let map: Map;
   let view: MapView;
 
   onMount(() => {
     const customBasemap = new VectorTileLayer({
-      url: initialBasemapUrl,
+      // url: initialBasemapUrl,
+      style: styleFromEditor,
     });
 
     const map = new Map({
@@ -58,14 +60,17 @@
       );
     });
 
-    const basemapUrlUnsub = basemapUrl.subscribe(($basemapUrl) => {
+    const basemapStyleUnsub = esriStyleJson.subscribe(($esriStyleJson) => {
       const currentBasemap = view.map.basemap.baseLayers.getItemAt(0);
+      const updatedStyle = JSON.parse($esriStyleJson);
       if (
         currentBasemap instanceof VectorTileLayer &&
-        currentBasemap.url !== $basemapUrl
+        currentBasemap.style !== updatedStyle
       ) {
+        console.debug("Updating style");
+
         const newBasemap = new VectorTileLayer({
-          url: $basemapUrl,
+          style: updatedStyle,
         });
 
         newBasemap
@@ -82,7 +87,7 @@
 
     return () => {
       mapStateUnsub();
-      basemapUrlUnsub();
+      basemapStyleUnsub();
     };
   });
 </script>
