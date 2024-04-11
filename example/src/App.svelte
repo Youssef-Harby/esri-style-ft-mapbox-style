@@ -132,7 +132,7 @@
 
   <!-- DIVIDER -->
   <div
-    class="flex justify-center items-center p-2 bg-gray-500 shadow z-10 w-full md:w-16 h-full md:flex-col sm:flex-row"
+    class="flex justify-center items-center p-2 bg-gray-500 shadow z-10 w-full md:w-16 md:flex-col sm:flex-row"
   >
     <button
       class="btn btn-outline-white btn-md mx-2 md:my-2"
