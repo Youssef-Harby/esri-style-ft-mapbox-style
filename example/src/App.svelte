@@ -81,7 +81,9 @@
 <!-- Navbar -->
 <div class="navbar bg-gray-500 shadow-lg">
   <div class="navbar-start">
-    <a class=" normal-case text-xl text-white" href="/"
+    <a
+      class=" normal-case text-xl text-white"
+      href="/esri-style-ft-mapbox-style/"
       >Vector Tiles Styles Converter (Esri - Mapbox)</a
     >
   </div>
