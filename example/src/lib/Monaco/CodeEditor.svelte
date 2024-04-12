@@ -1,4 +1,3 @@
-<!-- CodeEditor.svelte -->
 <script lang="ts">
   import loader from "@monaco-editor/loader";
   import { onDestroy, onMount } from "svelte";
@@ -11,41 +10,35 @@
   let editor: Monaco.editor.IStandaloneCodeEditor;
   let monaco: typeof Monaco;
   let editorContainer: HTMLElement;
+  let editorContent = content; // Initializes editor content with external content
   const dispatch = createEventDispatcher();
 
   onMount(async () => {
-    // Initialize the loader with the configuration if needed
-    loader.config({
-      paths: {
-        vs: "https://unpkg.com/monaco-editor/min/vs", // Adjust as needed
-      },
-    });
-
     monaco = await loader.init();
-
     editor = monaco.editor.create(editorContainer, {
+      automaticLayout: true,
       value: content,
       language: language || "json",
-      theme: "vs-light", // Optional: specify the editor's theme
+      theme: "vs-light",
+    });
+
+    editor.onDidChangeModelContent(() => {
+      const currentValue = editor.getValue();
+      if (currentValue !== editorContent) {
+        editorContent = currentValue;
+        dispatch("change", editorContent);
+      }
     });
   });
-  // Reactive content update
-  $: if (editor) {
+
+  $: if (editor && content !== editor.getValue()) {
     editor.setValue(content);
   }
 
   onDestroy(() => {
-    editor.getModel()?.dispose(); // Dispose the model explicitly
-    editor.dispose(); // Dispose the editor instance
+    editor.getModel()?.dispose();
+    editor.dispose();
   });
-
-  // Watch for changes in the editor content and emit an event
-  $: if (editor) {
-    editor.onDidChangeModelContent(() => {
-      const updatedContent = editor.getValue();
-      dispatch("change", updatedContent);
-    });
-  }
 </script>
 
 <div bind:this={editorContainer} class="editor-container"></div>

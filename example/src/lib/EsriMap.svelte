@@ -65,8 +65,6 @@
         currentBasemap instanceof VectorTileLayer &&
         currentBasemap.style !== updatedStyle
       ) {
-        console.debug("Updating style");
-
         const newBasemap = new VectorTileLayer({
           style: updatedStyle,
         });

@@ -18,17 +18,19 @@
 
   let esriUrlInput: string = "";
   let maplibreUrlInput: string = "";
+  let esriEditorContent = $esriStyleJson;
+  let maplibreEditorContent = $maplibreStyleJson;
 
   async function esriLogicSection(): Promise<void> {
     if (!esriUrlInput) return;
     try {
       const theFetchedEsriStyleJson =
         await resolveEsriRelativePaths(esriUrlInput);
-      esriStyleJson.set(JSON.stringify(theFetchedEsriStyleJson, null, 2));
+      esriEditorContent = JSON.stringify(theFetchedEsriStyleJson, null, 2);
+      esriStyleJson.set(esriEditorContent);
       esriBasemapUrl.set(esriUrlInput);
     } catch (error) {
       console.error("Failed to convert style:", error);
-      // mapboxStyleJson.set(`Error: ${(error as Error).message}`);
     }
   }
 
@@ -40,43 +42,53 @@
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const theFetchedMapLibreStyleJson = await response.json();
-      maplibreStyleJson.set(
-        JSON.stringify(theFetchedMapLibreStyleJson, null, 2)
+      maplibreEditorContent = JSON.stringify(
+        theFetchedMapLibreStyleJson,
+        null,
+        2
       );
+      maplibreStyleJson.set(maplibreEditorContent);
       maplibreBasemapUrl.set(maplibreUrlInput);
     } catch (error) {
       console.error("Failed to convert style:", error);
-      // mapboxStyleJson.set(`Error: ${(error as Error).message}`);
     }
   }
+
   function handleEsriEditorChange(event: CustomEvent<string>) {
     esriStyleJson.set(event.detail);
+    esriEditorContent = event.detail;
   }
   function handleMaplibreEditorChange(event: CustomEvent<string>) {
     maplibreStyleJson.set(event.detail);
+    maplibreEditorContent = event.detail;
   }
 
   async function convertEsriToMaplibreStyle(): Promise<void> {
     const theFetchedMaplibreStyleJson =
-      await constructMapboxStyleFromEsriAbsolute(
-        esriUrlInput,
-        JSON.parse(get(esriStyleJson))
-      );
+      await constructMapboxStyleFromEsriAbsolute(JSON.parse(esriEditorContent));
 
-    maplibreStyleJson.set(JSON.stringify(theFetchedMaplibreStyleJson, null, 2));
+    maplibreEditorContent = JSON.stringify(
+      theFetchedMaplibreStyleJson,
+      null,
+      2
+    );
+    maplibreStyleJson.set(maplibreEditorContent);
   }
 
   function convertMaplibreToEsriStyle(): void {
-    esriStyleJson.set(get(maplibreStyleJson));
+    esriEditorContent = maplibreEditorContent;
+    esriStyleJson.set(esriEditorContent);
   }
 
-  onMount(() => {
-    convertEsriToMaplibreStyle();
-  });
+  // onMount(() => {
+  //   convertEsriToMaplibreStyle();
+  //   convertMaplibreToEsriStyle();
+  // });
 
-  $: {
-    convertEsriToMaplibreStyle();
-  }
+  // $: {
+  //   convertEsriToMaplibreStyle();
+  //   convertMaplibreToEsriStyle();
+  // }
 </script>
 
 <!-- Navbar -->
@@ -111,7 +123,7 @@
   <div class="flex-1 flex flex-col sm:h-full">
     <div class="flex-1 p-4 overflow-auto bg-gray-50">
       <CodeEditor
-        bind:content={$esriStyleJson}
+        bind:content={esriEditorContent}
         on:change={handleEsriEditorChange}
         language="json"
       />
@@ -120,7 +132,7 @@
       <input
         bind:value={esriUrlInput}
         type="text"
-        placeholder="Enter URL"
+        placeholder="Enter Esri Vector Tiles Service URL (ends with /VectorTileServer)"
         class="input input-bordered w-full mr-2"
       />
       <button class="btn btn-outline" on:click={esriLogicSection}>Fetch</button>
@@ -150,7 +162,7 @@
   <div class="flex-1 flex flex-col sm:h-full">
     <div class="flex-1 p-4 overflow-auto bg-gray-50">
       <CodeEditor
-        bind:content={$maplibreStyleJson}
+        bind:content={maplibreEditorContent}
         language="json"
         on:change={handleMaplibreEditorChange}
       ></CodeEditor>
@@ -159,7 +171,7 @@
       <input
         type="text"
         bind:value={maplibreUrlInput}
-        placeholder="Enter URL"
+        placeholder="Enter Mapbox Style GL URL"
         class="input input-bordered w-full mr-2"
       />
       <button class="btn btn-outline" on:click={maplibreLogicSection}
