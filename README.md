@@ -55,4 +55,4 @@ Contributions are welcome, especially in implementing the conversion from Mapbox
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details. - this project is for Education purpose only.
+This project is licensed under the MIT License - see the LICENSE file for details, This project is for educational purposes only.
