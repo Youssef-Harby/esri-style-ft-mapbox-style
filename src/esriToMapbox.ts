@@ -167,11 +167,11 @@ async function constructMapboxStyleFromEsriAbsolute(esriStyleJson?: any): Promis
     }
 
     // Correct layer IDs by replacing invalid characters
-    if (esriStyleJson.layers) {
-        esriStyleJson.layers.forEach((layer: any) => {
-            layer.id = layer.id.replace(/\//g, '_');
-        });
-    }
+    // if (esriStyleJson.layers) {
+    //     esriStyleJson.layers.forEach((layer: any) => {
+    //         layer.id = layer.id.replace(/\//g, '_');
+    //     });
+    // }
 
     return esriStyleJson;
 }
