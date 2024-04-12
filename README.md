@@ -6,8 +6,9 @@ This project provides a utility for converting Esri Vector Tile Styles to Mapbox
 
 ## Current Status
 
-- ✅ The conversion from Esri to Mapbox style specifications is fully supported and operational.
+- ✅ The conversion from Esri to Mapbox style specifications is partially supported and operational ( open GitHub issue if you find any issues).
 - ❌ The conversion from Mapbox to Esri style specifications is not yet implemented.
+  - ArcGIS Vector Tile Server service endpoint is not yet supported (the mapbox works in ArcGIS Map SDK but not in ArcGIS Online or ArcGIS Pro so it needs to emulate the service endpoint).
 
 ## How to Use
 
@@ -54,4 +55,4 @@ Contributions are welcome, especially in implementing the conversion from Mapbox
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License - see the LICENSE file for details. - this project is for Education purpose only.

@@ -1,6 +1,5 @@
 <script lang="ts">
   import {
-    mapState,
     esriBasemapUrl,
     maplibreBasemapUrl,
     esriStyleJson,
@@ -13,8 +12,6 @@
     resolveEsriRelativePaths,
     constructMapboxStyleFromEsriAbsolute,
   } from "@esri-style-ft-mapbox-style/esriToMapbox";
-  import { get } from "svelte/store";
-  import { onMount } from "svelte";
 
   let esriUrlInput: string = "";
   let maplibreUrlInput: string = "";
@@ -79,16 +76,6 @@
     esriEditorContent = maplibreEditorContent;
     esriStyleJson.set(esriEditorContent);
   }
-
-  // onMount(() => {
-  //   convertEsriToMaplibreStyle();
-  //   convertMaplibreToEsriStyle();
-  // });
-
-  // $: {
-  //   convertEsriToMaplibreStyle();
-  //   convertMaplibreToEsriStyle();
-  // }
 </script>
 
 <!-- Navbar -->
