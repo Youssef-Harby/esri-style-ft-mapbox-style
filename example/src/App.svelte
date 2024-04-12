@@ -105,7 +105,7 @@
     </a>
   </div>
 </div>
-<div class="flex flex-col md:flex-row h-screen">
+<div class="flex flex-col md:flex-row h-[calc(100vh-4rem)]">
   <!-- CODE EDITOR 1 -->
   <div class="flex-1 flex flex-col sm:h-full">
     <div class="flex-1 p-4 overflow-auto bg-gray-50">
